@@ -1,0 +1,11 @@
+-- This query will return the number of transaction done for each payment method including the blanks.
+
+SELECT
+  PaymentMethod,
+  COUNT(*) AS Row_Count
+FROM
+  `brilliant-scene-242721.Incubyte.payment` AS payment
+GROUP BY
+  payment.PaymentMethod
+ORDER BY
+  Row_Count DESC;
