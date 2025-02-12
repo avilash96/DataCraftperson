@@ -1,0 +1,28 @@
+-- This query will provide us the CustomerID (customer) who spend maximum amount on purchasing items including number of transaction performed (total_purchases)
+
+WITH CustomerSpending AS (
+    SELECT 
+        CustomerID,
+        COUNT(TransactionID) AS total_purchases,
+        SUM(TransactionAmount) AS total_spent
+    FROM `brilliant-scene-242721.Incubyte.payment`
+    GROUP BY CustomerID
+),
+RankedCustomers AS (
+    SELECT 
+        CustomerID,
+        total_purchases,
+        total_spent,
+        RANK() OVER (ORDER BY total_spent DESC) AS spending_rank,
+        RANK() OVER (ORDER BY total_purchases DESC) AS frequency_rank
+    FROM CustomerSpending
+)
+SELECT 
+    CustomerID,
+    total_purchases,
+    ROUND(total_spent,2) AS total_spend,
+    spending_rank,
+    frequency_rank,
+FROM RankedCustomers
+ORDER BY total_spend DESC
+LIMIT 10;
