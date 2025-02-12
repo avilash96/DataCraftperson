@@ -3,7 +3,7 @@
 WITH CustomerSpending AS (
     SELECT 
         CustomerID,
-        COUNT(TransactionID) AS total_purchases,
+        COUNT(TransactionID) AS total_transaction,
         SUM(TransactionAmount) AS total_spent,
         SUM(Quantity) AS quantity
     FROM `brilliant-scene-242721.Incubyte.payment`
@@ -12,16 +12,16 @@ WITH CustomerSpending AS (
 RankedCustomers AS (
     SELECT 
         CustomerID,
-        total_purchases,
+        total_transaction,
         total_spent,
         Quantity,
         RANK() OVER (ORDER BY total_spent DESC) AS spending_rank,
-        RANK() OVER (ORDER BY total_purchases DESC) AS frequency_rank
+        RANK() OVER (ORDER BY total_transaction DESC) AS frequency_rank
     FROM CustomerSpending
 )
 SELECT 
     CustomerID,
-    total_purchases,
+    total_transaction,
     ROUND(total_spent,2) AS total_spend,
     quantity,
     spending_rank,
