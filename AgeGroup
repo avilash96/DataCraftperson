@@ -1,0 +1,31 @@
+-- This query will help to analyse customers with category of gender and age group. 
+
+WITH CustomerAgeGroups AS (
+    SELECT 
+        CustomerID,
+        CustomerGender,
+        CASE 
+            WHEN CustomerAge BETWEEN 18 AND 24 THEN '18-24'
+            WHEN CustomerAge BETWEEN 25 AND 34 THEN '25-34'
+            WHEN CustomerAge BETWEEN 35 AND 44 THEN '35-44'
+            WHEN CustomerAge BETWEEN 45 AND 54 THEN '45-54'
+            WHEN CustomerAge BETWEEN 55 AND 64 THEN '55-64'
+            ELSE '65+'
+        END AS AgeGroup
+    FROM `brilliant-scene-242721.Incubyte.payment`
+),
+CustomerSpending AS (
+    SELECT 
+        customeragegroup.AgeGroup,
+        customeragegroup.CustomerGender,
+        COUNT(DISTINCT customeragegroup.CustomerID) AS total_customers,
+        COUNT(payment.TransactionID) AS total_purchases,
+        SUM(payment.TransactionAmount) AS total_spent,
+        AVG(payment.TransactionAmount) AS avg_spent_per_transaction
+    FROM `brilliant-scene-242721.Incubyte.payment` AS payment
+    JOIN CustomerAgeGroups AS customeragegroup
+    ON payment.CustomerID = customeragegroup.CustomerID
+    GROUP BY customeragegroup.AgeGroup, customeragegroup.CustomerGender
+    ORDER BY customeragegroup.AgeGroup, customeragegroup.CustomerGender
+)
+SELECT * FROM CustomerSpending;
