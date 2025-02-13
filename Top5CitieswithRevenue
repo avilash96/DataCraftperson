@@ -1,0 +1,7 @@
+-- Top 5 cities by Sales Revenue
+
+SELECT City, SUM(TransactionAmount) AS Total_Revenue 
+FROM `brilliant-scene-242721.Incubyte.payment`
+GROUP BY City 
+ORDER BY Total_Revenue DESC 
+LIMIT 5;
