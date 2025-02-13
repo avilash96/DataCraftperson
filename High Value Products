@@ -1,0 +1,31 @@
+-- High Value Products with higher shipping cost.
+
+WITH HVT AS ( -- High Value Transactions
+    SELECT 
+        TransactionID,
+        CustomerID,
+        TransactionAmount,
+        ShippingCost
+    FROM `brilliant-scene-242721.Incubyte.payment`
+    WHERE TransactionAmount > 50000 AND ShippingCost > 1000 
+),
+TotalStats AS ( -- Overall Transactions & Revenue
+    SELECT 
+        COUNT(TransactionID) AS total_transactions,
+        SUM(TransactionAmount) AS total_revenue
+    FROM `brilliant-scene-242721.Incubyte.payment`
+),
+HighValueStats AS ( -- High Value Transactions & Revenue
+    SELECT 
+        COUNT(TransactionID) AS high_value_transactions,
+        SUM(TransactionAmount) AS high_value_revenue
+    FROM HVT
+)
+SELECT 
+    hvs.high_value_transactions,
+    ts.total_transactions,
+    ROUND((hvs.high_value_transactions * 100.0 / ts.total_transactions), 2) AS high_value_txn_percentage,
+    hvs.high_value_revenue,
+    ts.total_revenue,
+    ROUND((hvs.high_value_revenue * 100.0 / ts.total_revenue), 2) AS high_value_revenue_percentage
+FROM HighValueStats hvs, TotalStats ts;
