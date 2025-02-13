@@ -1,0 +1,32 @@
+--- Region Wise Sales trend
+
+WITH RegionalSales AS (
+    SELECT 
+        Region,
+        TransactionID,
+        COUNT(TransactionID) AS total_sales,
+        SUM(TransactionAmount) AS total_revenue
+    FROM `brilliant-scene-242721.Incubyte.payment`
+    WHERE Region IS NOT NULL
+    GROUP BY Region, TransactionID
+),
+RankedProducts AS (
+    SELECT 
+        Region,
+        TransactionID,
+        total_sales,
+        total_revenue,
+        RANK() OVER (PARTITION BY Region ORDER BY total_sales DESC) AS sales_rank,
+        RANK() OVER (PARTITION BY Region ORDER BY total_revenue DESC) AS revenue_rank
+    FROM RegionalSales
+    WHERE total_revenue > 20000
+)
+SELECT 
+    Region,
+    TransactionID,
+    total_sales,
+    total_revenue,
+    revenue_rank
+FROM RankedProducts
+WHERE revenue_rank <= 5 -- Top 5 products by sales and revenue in each region
+ORDER BY Region, sales_rank;
