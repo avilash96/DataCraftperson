@@ -1,0 +1,12 @@
+-- Comparing discounts with number of units sold for future discount reconsideration.
+
+
+SELECT 
+    CustomerID,
+    AVG(DiscountPercent) AS avg_discount,
+    COUNT(TransactionID) AS total_sales,
+    SUM(TransactionAmount) AS total_revenue,
+    ROUND(AVG(TransactionAmount), 2) AS avg_transaction_value
+FROM `brilliant-scene-242721.Incubyte.payment`
+GROUP BY CustomerID
+ORDER BY avg_discount DESC;
